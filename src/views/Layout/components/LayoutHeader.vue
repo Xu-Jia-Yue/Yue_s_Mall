@@ -1,0 +1,161 @@
+<script setup lang="ts">
+import { useCategoryStore } from '@/stores/CategoryStore'
+import headerCart from './HeaderCart.vue'
+import { useHomeStore } from '@/stores/HomeNav'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+
+const router = useRouter()
+const categoryStore = useCategoryStore()
+const homeStore = useHomeStore()
+const searchInp = ref('')
+
+const searchPage = () => {
+  if (searchInp.value) {
+    router.push({ name: 'searchPage', params: { inp: searchInp.value } })
+  } else {
+    ElMessage({ type: 'warning', message: '请输入搜索内容' })
+  }
+}
+</script>
+
+<template>
+  <header class="app-header">
+    <div class="container">
+      <!-- logo -->
+      <h1 class="logo">
+        <RouterLink to="/">Yue`s mall</RouterLink>
+      </h1>
+      <!-- 顶部导航 -->
+      <ul class="app-header-nav">
+        <li class="home">
+          <RouterLink
+            to="/"
+            @click="homeStore.changeFlag(1)"
+            :class="{ active: homeStore.activeFlag }"
+            >首页</RouterLink
+          >
+        </li>
+        <li class="home" v-for="item in categoryStore.categoryList" :key="item.id">
+          <RouterLink
+            active-class="active"
+            :to="`/category/${item.id}`"
+            @click="homeStore.changeFlag(0)"
+            >{{ item.name }}</RouterLink
+          >
+        </li>
+      </ul>
+      <!-- 搜索 -->
+      <div class="search">
+        <i class="iconfont icon-search" @click="searchPage"></i>
+        <input type="text" v-model="searchInp" placeholder="搜一搜" @keydown.enter="searchPage" />
+      </div>
+      <!-- 头部购物车 -->
+      <headerCart />
+    </div>
+  </header>
+</template>
+
+<style scoped lang="scss">
+.app-header {
+  background: #fff;
+
+  .container {
+    display: flex;
+    align-items: center;
+  }
+
+  .logo {
+    width: 200px;
+
+    a {
+      display: block;
+      height: 132px;
+      width: 100%;
+      text-indent: -9999px;
+      background: url('@/assets/images/logo3.png') no-repeat center / contain;
+    }
+  }
+
+  .app-header-nav {
+    width: 820px;
+    display: flex;
+    padding-left: 40px;
+    position: relative;
+    z-index: 998;
+
+    li {
+      margin-right: 40px;
+      width: 38px;
+      text-align: center;
+
+      a {
+        font-size: 16px;
+        line-height: 32px;
+        height: 32px;
+        display: inline-block;
+
+        &:hover {
+          color: $xtxColor;
+          border-bottom: 1px solid $xtxColor;
+        }
+      }
+
+      .active {
+        color: $xtxColor;
+        border-bottom: 1px solid $xtxColor;
+      }
+    }
+  }
+
+  .search {
+    width: 170px;
+    height: 32px;
+    position: relative;
+    border-bottom: 1px solid #e7e7e7;
+    line-height: 32px;
+
+    .icon-search {
+      font-size: 18px;
+      margin-left: 5px;
+    }
+
+    input {
+      width: 140px;
+      padding-left: 5px;
+      color: #666;
+    }
+  }
+
+  .cart {
+    width: 50px;
+
+    .curr {
+      height: 32px;
+      line-height: 32px;
+      text-align: center;
+      position: relative;
+      display: block;
+
+      .icon-cart {
+        font-size: 22px;
+      }
+
+      em {
+        font-style: normal;
+        position: absolute;
+        right: 0;
+        top: 0;
+        padding: 1px 6px;
+        line-height: 1;
+        background: $helpColor;
+        color: #fff;
+        font-size: 12px;
+        border-radius: 10px;
+        font-family: Arial;
+      }
+    }
+  }
+}
+</style>
